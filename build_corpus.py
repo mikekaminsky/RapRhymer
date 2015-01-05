@@ -6,6 +6,7 @@
 #https://github.com/rouxpz/pygenius
 from pygenius import artists, songs, wordsearch
 import sqlite3
+execfile("poetry.py")
 
 #Set up sqlite connection
 conn = sqlite3.connect('/Users/ccUser/sqlitedbs/rapgenerator.db')
@@ -17,21 +18,21 @@ c.execute('''
         DROP TABLE IF EXISTS kanyelyrics;
 ''')
 c.execute('''
-        CREATE TABLE kanyelyrics (id integer primary key, title_id integer, lyrics text);
+        CREATE TABLE kanyelyrics (id integer primary key autoincrement, title_id integer, lyrics text, lastword text, rhymesyls text);
 ''')
 
 #Get lyrics for all of the songs
 
-c.execute("select * from kanyesongs where title not like '%dates%'")
+c.execute("select * from kanyesongs where title not like '%dates%' limit 1000")
 for title in c.fetchall():
-    #print(title[0])
-    #print(title[1])
     try:
         lyrics = songs.searchSong('kanye west', title[1].lower(), 'lyrics')
         for lyric in lyrics:
-            #print(lyric)
-            c.execute('insert into kanyelyrics(title_id) values (?)', (title[0], ))
-            c.execute('insert into kanyelyrics(lyrics) values (?)', (lyric, ))
+            lastword = lyric.rsplit(None, 1)[-1]
+            syls = str(rhymesyls(lastword))
+            #print(syls)
+            c.execute('insert into kanyelyrics(title_id,lyrics,lastword,rhymesyls) values (?,?,?,?)', (title[0],lyric,lastword, syls))
+
     except:
         pass
 
