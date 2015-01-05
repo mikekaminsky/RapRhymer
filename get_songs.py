@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #get_songs.py
 #Michael Kaminsky
 
@@ -14,19 +13,36 @@ c = conn.cursor()
 
 #Set up database
 c.execute('''
-        DROP TABLE IF EXISTS kanyesongs;
+        DROP TABLE IF EXISTS songs;
 ''')
 c.execute('''
-        CREATE TABLE kanyesongs (id integer primary key, title text);
+        CREATE TABLE songs (id integer primary key, title text, artist text);
 ''')
 
-KanyeSongs = songs.findAllSongs('Kanye West', 'titles')
+AristList = [
+       'kanye west',
+       'migos',
+       'drake',
+       'big krit',
+       'lupe fiasco',
+       'joey badass',
+       'meek mill',
+       'logic',
+       'danny brown',
+       'rick ross',
+       'lil wayne',
+       'jay z',
+       '2 chainz',
+        ]
 
-for song in KanyeSongs:
-    if ' by ' not in song and 'Album Art' not in song and 'Credits' not in song and 'Interview' not in song and 'Skit' not in song and 'Dates' not in song:
-        print song
-        c.execute('insert into kanyesongs(title) values (?)', (song, ))
-
-# Save (commit) the changes
-conn.commit()
-
+for artist in AristList:
+    print(artist)
+    Songs = songs.findAllSongs(artist, 'titles')
+    used = list()
+    for song in Songs:
+        if song not in used:
+            if ' by ' not in song and 'Album Art' not in song and 'Credits' not in song and 'Interview' not in song and 'Skit' not in song and 'Dates' not in song:
+                print song
+                used.append(song)
+                c.execute('insert into songs(title, artist) values (?,?)', (song, artist))
+    conn.commit()
