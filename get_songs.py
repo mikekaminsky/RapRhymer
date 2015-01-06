@@ -35,14 +35,3 @@ AristList = [
        '2 chainz',
         ]
 
-for artist in AristList:
-    print(artist)
-    Songs = songs.findAllSongs(artist, 'titles')
-    used = list()
-    for song in Songs:
-        if song not in used:
-            if ' by ' not in song and 'Album Art' not in song and 'Credits' not in song and 'Interview' not in song and 'Skit' not in song and 'Dates' not in song:
-                print song
-                used.append(song)
-                c.execute('insert into songs(title, artist) values (?,?)', (song, artist))
-    conn.commit()

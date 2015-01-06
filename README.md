@@ -4,7 +4,7 @@ A proof-of-concept for a rap music generation app.
 
 ##Proof of Concept:
 1. Build corpus of lyrics
-  * Currently jsut doing Kanye Lyrics
+  * Currently just doing Kanye Lyrics
 2. Write script that creates couplets.
   * First choose a random lyric.
   * Then start at a random place in the corpus, and go until you find a rhyme.
