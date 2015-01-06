@@ -66,7 +66,7 @@ class RapGenerator(object):
         #Grab random lyric
         def getrandom():
             rand = random.randrange(0, numLyrics)
-            c.execute("select * from lyrics join songs on (lyrics.title_id = songs.id) where lyrics is not null and artist != 'migos' and lyrics.id = (?)", (rand,))
+            c.execute("select * from lyrics join songs on (lyrics.title_id = songs.id) where lyrics is not null and lyrics.id = (?)", (rand,))
             data = c.fetchall()
             return data
 
