@@ -6,6 +6,7 @@ import sqlite3
 import pyttsx
 import random
 import string
+import os.path
 
 class RapGenerator(object):
     """
@@ -107,5 +108,4 @@ class RapGenerator(object):
         for lyric in Song:
             print(lyric)
             engine.say(lyric)
-
-        engine.runAndWait()
+        return engine.runAndWait()

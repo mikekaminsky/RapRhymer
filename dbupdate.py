@@ -4,7 +4,7 @@
 import sqlite3
 import os.path
 from pygenius import artists, songs, wordsearch
-execfile("poetry.py")
+execfile("rhymes.py")
 
 class DBUpdate(object):
 
