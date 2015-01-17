@@ -31,19 +31,42 @@ def nsyl(word):
         return approx_nsyl(word)
     return min([len([y for y in x if isdigit(str(y[-1]))]) for x in d[word.lower()]])
 
-def rhymesyls(word):
+def multirhyme(word):
+    vowels = set(['A', 'E', 'I', 'O', 'U'])
     if word.lower() in d:
         list1 = min(d[word.lower()], key=len)
         outlist = str()
         i = -1
+        lastsyl = 0
         while i >= 0 - len(list1):
-            if isdigit(str(list1[i][-1])):
-                outlist = list1[i][:-1]
-                if i != -1:
-                    outlist = outlist + ' ' + list1[i + 1:][0]
+            sound = str(list1[i])
+            if lastsyl == 0 or not any(letter in sound for letter in vowels):
+                outlist = sound+ outlist
+            else:
                 return outlist
+            if isdigit(str(list1[i][-1])):
+                lastsyl = 1
             i -= 1
         return outlist
     else:
         return "NORHYME"
+
+def rhymesyls(word):
+    if nsyl(word) > 1:
+        return(multirhyme(word))
+    else:
+        if word.lower() in d:
+            list1 = min(d[word.lower()], key=len)
+            outlist = str()
+            i = -1
+            while i >= 0 - len(list1):
+                if isdigit(str(list1[i][-1])):
+                    outlist = list1[i][:-1]
+                    if i != -1:
+                        outlist = outlist + ' ' + list1[i + 1:][0]
+                    return outlist
+                i -= 1
+            return outlist
+        else:
+            return "NORHYME"
 
