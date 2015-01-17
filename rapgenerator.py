@@ -44,15 +44,6 @@ class RapGenerator(object):
         conn.text_factory = str
         c = conn.cursor()
 
-        #Problematic lyrics
-        removelist = [
-                '[Verse 1]',
-                '[Verse 2]',
-                '[Verse]',
-                '[Hook]',
-                '[Intro]',
-                ]
-
         #Number of couplets
         if SongLength is None:
             SongLength = 5
@@ -63,31 +54,56 @@ class RapGenerator(object):
         c.execute("select count(*) from lyrics where lyrics is not null")
         numLyrics = c.fetchone()[0]
 
+        notsongwords = set(["interview", "rant"])
+        notlyricwords = set(["[", "]", "(", ")", "produced by", "mixed by"])
+
         #Grab random lyric
         def getrandom():
             rand = random.randrange(0, numLyrics)
-            c.execute("select * from lyrics join songs on (lyrics.title_id = songs.id) where lyrics is not null and lyrics.id = (?)", (rand,))
+            c.execute("""select * 
+                         from lyrics 
+                         join songs 
+                            on (lyrics.title_id = songs.id) 
+                         where 
+                            lyrics is not null 
+                            and lyrics.id = (?)""", (rand,))
             data = c.fetchall()
-            return data
+            nwords = len(str.split(data[0][2]))
+            if data is not None and not any(word in data[0][2] for word in notlyricwords)and nwords > 2 and nwords < 25 and not any(word in notsongwords for word in data[0][6].split()):
+                return data
+            else:
+                return(getrandom())
 
-        def cleanlyric(lyric):
-            temp = lyric
-            for removal in removelist:
-                temp = string.replace(temp, removal, '')
-            return temp
+        def pickrhyme(allrhymeobs):
+            rhymeobs = random.choice(allrhymeobs)
+            nwords = len(str.split(rhymeobs[2]))
+            if rhymeobs is not None and not any(word in rhymeobs[2] for word in notlyricwords) and nwords > 2 and nwords < 25 and not any(word in notsongwords for word in rhymeobs[5].split()):
+                return rhymeobs
+            else:
+                return(pickrhyme(allrhymeobs))
 
         i = 0
         while i < SongLength:
             obs = getrandom()
             lyric1 = obs[0][2]
+            lastword1 = obs[0][3]
             rhyme = obs[0][4]
             title1 = obs[0][1]
-            c.execute("select * from lyrics where lyrics is not null and rhymesyls = (?) and lyrics != (?) and title_id != (?) limit 1", (rhyme, lyric1, title1))
-            rhymeobs = c.fetchall()
+            c.execute("""select 
+                            lyrics.*,
+                            songs.title
+                         from lyrics 
+                         join songs
+                            on (lyrics.title_id = songs.id) 
+                         where 
+                            lyrics is not null 
+                            and rhymesyls = (?) 
+                            and lower(lastword) != (?) 
+                            and title_id != (?) """, (rhyme, lastword1.lower(), title1))
+            allrhymeobs = c.fetchall()
+            rhymeobs = pickrhyme(allrhymeobs)
             if rhymeobs:
-                lyric1 = cleanlyric(lyric1)
-                lyric2 = rhymeobs[0][2]
-                lyric2 = cleanlyric(lyric2)
+                lyric2 = rhymeobs[2]
                 Song.append(lyric1)
                 Song.append(lyric2)
                 Song.append("\n")
@@ -104,8 +120,8 @@ class RapGenerator(object):
         if Song is None:
             Song = self.rap
 
-        engine = pyttsx.init()
+        #engine = pyttsx.init()
         for lyric in Song:
             print(lyric)
-            engine.say(lyric)
-        return engine.runAndWait()
+            #engine.say(lyric)
+        #return engine.runAndWait()

@@ -4,4 +4,4 @@ rapper = RapGenerator()
 
 rapper.CreateRap()
 
-#rapper.ReadRap()
+rapper.ReadRap()
