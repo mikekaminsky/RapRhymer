@@ -3,6 +3,7 @@
 
 import sqlite3
 import os.path
+import re
 from pygenius import artists, songs, wordsearch
 execfile("rhymes.py")
 
@@ -58,17 +59,17 @@ class DBUpdate(object):
         else:
             for artist in ArtistList:
                 print("Finding songs for " + artist)
-                Titles = songs.findAllSongs(artist, 'titles')
+                Songs = songs.findAllSongs(artist)
                 used = list()
-                for title in Titles:
-                    print(title)
-                    c.execute("select count(*) from songs where title = (?) and artist = (?)", (title, artist))
+                for song in Songs:
+                    print(song[1])
+                    c.execute("select count(*) from songs where title = (?) and artist = (?)", (song[1], artist))
                     checkindb = c.fetchall()
                     if checkindb[0][0] == 0:
-                        if title not in used:
-                            if not [i for i, x in enumerate(BadTerms) if x in title]:
-                                used.append(title)
-                                c.execute('insert into songs(title, artist) values (?,?)', (title, artist))
+                        if song[1] not in used:
+                            if not [i for i, x in enumerate(BadTerms) if x in song[1]]:
+                                used.append(song[1])
+                                c.execute('insert into songs(title, artist, url) values (?,?,?)', (song[1], artist, song[0]))
                     conn.commit()
 
     def AddLyrics(self):
@@ -80,19 +81,21 @@ class DBUpdate(object):
         conn.text_factory = str
         c = conn.cursor()
 
-        c.execute("select songs.id, artist, title from songs left join lyrics on songs.id = lyrics.title_id where lyrics.title_id is null")
+        c.execute("select songs.id, artist, title, url from songs left join lyrics on songs.id = lyrics.title_id where lyrics.title_id is null")
         obs = c.fetchall()
         for title in obs:
-            print("Looking for lyrics for " + title[2])
+            print("Looking for lyrics for " + title[1] + title[2])
             try:
-                lyrics = songs.searchSong(title[1].lower(), title[2].lower(), 'lyrics')
+                lyrics = songs.searchURL(title[3], 'lyrics')
                 for lyric in lyrics:
                     for line in lyric.split('\n'):
-                        lastword = line.rsplit(None, 1)[-1]
-                        syls = str(rhymesyls(lastword))
-                        c.execute('insert into lyrics(title_id,lyrics,lastword,rhymesyls) values (?,?,?,?)', (title[0],line,lastword, syls))
-                        conn.commit()
-                    print("Lyrics added for " + title)
-            except:
-                print("Lyrics not found.")
+                        if line:
+                            lastword = line.rsplit(None, 1)[-1]
+                            lastword = re.sub('[^A-Za-z0-9\s]+', '', lastword)
+                            syls = str(rhymesyls(lastword))
+                            if syls != "NORHYME":
+                                c.execute('insert into lyrics(title_id,lyrics,lastword,rhymesyls) values (?,?,?,?)', (title[0],line,lastword, syls))
+                                conn.commit()
+            except Exception as e:
+                print(e)
                 pass

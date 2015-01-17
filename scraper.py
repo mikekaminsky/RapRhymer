@@ -1,5 +1,11 @@
 #scraper.py
 execfile("dbupdate.py")
+execfile("dbsetup.py")
+
+
+#db = DBSetup()
+#db.DBDestroy()
+#db.DBCreate()
 
 db = DBUpdate()
 
@@ -22,4 +28,3 @@ ArtistList = [
 
 db.AddSongs(ArtistList)
 db.AddLyrics()
-
