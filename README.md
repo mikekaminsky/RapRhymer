@@ -1,6 +1,8 @@
 #RapRhymer
 
-A Library for scraping rap lyrics and generating a rhyme index.
+A Library for scraping rap lyrics and generating a rhyme index. 
+
+This library powers [RhymeRemix.com](http://www.rhymeremix.com/)
 
 ##See Also:
 * [Nantucket](https://github.com/DanielleSucher/Nantucket)
