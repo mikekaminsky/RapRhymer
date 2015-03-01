@@ -81,7 +81,7 @@ class DBUpdate(object):
         conn.text_factory = str
         c = conn.cursor()
 
-        c.execute("select songs.id, artist, title, url from songs left join lyrics on songs.id = lyrics.title_id where lyrics.title_id is null")
+        c.execute("select songs.id, artist, title, url from songs left join lyrics on songs.id = lyrics.song_id where lyrics.song_id is null")
         obs = c.fetchall()
         for title in obs:
             print("Looking for lyrics for " + title[1] + title[2])
@@ -94,7 +94,7 @@ class DBUpdate(object):
                             lastword = re.sub('[^A-Za-z0-9\s]+', '', lastword)
                             syls = str(rhymesyls(lastword))
                             if syls != "NORHYME":
-                                c.execute('insert into lyrics(title_id,lyrics,lastword,rhymesyls) values (?,?,?,?)', (title[0],line,lastword, syls))
+                                c.execute('insert into lyrics(song_id,lyrics,lastword,rhymesyls) values (?,?,?,?)', (title[0],line,lastword, syls))
                                 conn.commit()
             except Exception as e:
                 print(e)

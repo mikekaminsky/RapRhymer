@@ -72,5 +72,5 @@ class DBSetup(object):
         c.execute(' DROP TABLE IF EXISTS songs; ')
         c.execute(' CREATE TABLE songs (id integer primary key, title text, artist text, url text); ')
         c.execute(' DROP TABLE IF EXISTS lyrics; ')
-        c.execute(' CREATE TABLE lyrics (id integer primary key, title_id integer, lyrics text, lastword text, rhymesyls text); ')
+        c.execute(' CREATE TABLE lyrics (id integer primary key, song_id integer, lyrics text, lastword text, rhymesyls text); ')
         conn.close()
