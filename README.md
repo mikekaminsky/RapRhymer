@@ -2,7 +2,9 @@
 
 A Library for scraping rap lyrics and generating a rhyme index. 
 
-This library powers [RhymeRemix.com](http://www.rhymeremix.com/) [Repo](https://github.com/mikekaminsky/rhymeremix)
+This library powers [RhymeRemix.com](http://www.rhymeremix.com/) 
+
+[Repo](https://github.com/mikekaminsky/rhymeremix)
 
 ##See Also:
 * [Nantucket](https://github.com/DanielleSucher/Nantucket)
